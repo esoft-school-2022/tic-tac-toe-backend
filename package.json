@@ -18,6 +18,7 @@
   "homepage": "https://github.com/esoft-school-2022/tic-tac-toe-backend#readme",
   "dependencies": {
     "express": "^4.18.0",
+    "knex": "^2.0.0",
     "socket.io": "^4.5.0"
   }
 }
