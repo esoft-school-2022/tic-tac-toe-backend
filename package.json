@@ -17,12 +17,12 @@
   },
   "homepage": "https://github.com/esoft-school-2022/tic-tac-toe-backend#readme",
   "dependencies": {
-    "express": "^4.18.0",
-    "knex": "^2.0.0",
-    "pg": "^8.7.3",
-    "socket.io": "^4.5.0"
+    "express": "4.18.0",
+    "knex": "2.0.0",
+    "pg": "8.7.3",
+    "socket.io": "4.5.0"
   },
   "devDependencies": {
-    "jest": "^28.0.2"
+    "jest": "28.0.2"
   }
 }
