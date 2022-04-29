@@ -2,8 +2,8 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = (knex) => {
-  knex.schema.createTable('users', (table) => {
+exports.up = async(knex) => {
+  await knex.schema.createTable('users', (table) => {
     table
       .increments('id')
       .primary()
@@ -33,7 +33,7 @@ exports.up = (knex) => {
       .comment('Дата обновления');
     table.comment('Пользователи');
   });
-  knex.schema.createTable('games', (table) => {
+  await knex.schema.createTable('games', (table) => {
     table
       .increments('id')
       .primary()
@@ -61,7 +61,7 @@ exports.up = (knex) => {
       .comment('Дата удаления');
     table.comment('Игры');
   });
-  knex.schema.createTable('players', (table) => {
+  await knex.schema.createTable('players', (table) => {
     table
       .increments('id')
       .primary()
@@ -87,7 +87,7 @@ exports.up = (knex) => {
       .unique(['game_id', 'number'])
       .comment('Игроки');
   });
-  knex.schema.createTable('moves', (table) => {
+  await knex.schema.createTable('moves', (table) => {
     table
       .increments('id')
       .primary()
@@ -115,9 +115,9 @@ exports.up = (knex) => {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = (knex) => {
-  knex.schema.dropTable('moves');
-  knex.schema.dropTable('players');
-  knex.schema.dropTable('games');
-  knex.schema.dropTable('users');
+exports.down = async(knex) => {
+  await knex.schema.dropTable('moves');
+  await knex.schema.dropTable('players');
+  await knex.schema.dropTable('games');
+  await knex.schema.dropTable('users');
 };
