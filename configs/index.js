@@ -5,9 +5,9 @@ module.exports = {
       connection: {
         host: 'localhost',
         port: 5432,
-        user: 'tic-tac-toe',
+        user: 'tic_tac_toe',
         password: 'Passw0rd',
-        database: 'tic-tac-toe'
+        database: 'tic_tac_toe'
       },
       migrations: {
         tableName: 'migrations',
