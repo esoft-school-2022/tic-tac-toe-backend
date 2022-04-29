@@ -1,3 +1,4 @@
 module.exports = {
-  ...require('./db')
+  ...require('./db'),
+  ...require('./query')
 };

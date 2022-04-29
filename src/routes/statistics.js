@@ -3,6 +3,6 @@ const {getWinRateStatisticsController} = require('../controllers');
 
 const router = Router();
 
-router.get('/', getWinRateStatisticsController)
+router.get('/', getWinRateStatisticsController);
 
 module.exports = router;
