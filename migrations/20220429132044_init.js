@@ -95,7 +95,9 @@ exports.up = async(knex) => {
     table
       .integer('game_id')
       .notNullable()
-      .comment('Идентификатор игры');
+      .comment('Идентификатор игры')
+      .references('id')
+      .inTable('games');
     table
       .integer('number')
       .notNullable()
