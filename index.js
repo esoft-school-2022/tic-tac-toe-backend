@@ -5,4 +5,4 @@ const app = express();
 
 app.use(express.json());
 
-app.listen(config[process.env || 'development'].server.port);
+app.listen(config[process.env.NODE_ENV || 'development'].server.port);
