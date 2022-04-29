@@ -43,7 +43,7 @@ exports.up = async(knex) => {
       .notNullable()
       .comment('Размер поля');
     table
-      .integer('winner_number')
+      .integer('winner')
       .nullable()
       .comment('Номер победившего игрока');
     table
