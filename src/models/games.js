@@ -1,5 +1,13 @@
 const {db} = require('../utils');
 
+const fieldMap = {
+  id: 'id',
+  winner: 'winner',
+  createdAt: 'created_at',
+  finishedAt: 'finished_at',
+  deletedAt: 'deleted_at'
+};
+
 /**
  * Создает игру.
  * @param {int[]} userIds
@@ -35,17 +43,23 @@ const startGame = async(userIds, size = 3) => {
  * @return {Promise<void>}
  */
 const finishGame = async(gameId, winner = null) => {
-  const {finishedAt, deletedAt} = await db
+  const game = await db
     .first({finishedAt: 'finished_at', deletedAt: 'deleted_at'})
     .from('games')
     .where({id: gameId});
 
+  if (!game) {
+    throw new Error('Game not found');
+  }
+
+  const {finishedAt, deletedAt} = game;
+
   if (deletedAt) {
-    throw new Error("Can't finish deleted game");
+    throw new Error('Can\'t finish deleted game');
   }
 
   if (finishedAt) {
-    throw new Error("Can't finish finished game");
+    throw new Error('Can\'t finish finished game');
   }
 
   await db
@@ -63,17 +77,23 @@ const finishGame = async(gameId, winner = null) => {
  * @return {Promise<void>}
  */
 const cancelGame = async(gameId) => {
-  const {finishedAt, deletedAt} = await db
+  const game = await db
     .first({finishedAt: 'finished_at', deletedAt: 'deleted_at'})
     .from('games')
     .where({id: gameId});
 
+  if (!game) {
+    throw new Error('Game not found');
+  }
+
+  const {finishedAt, deletedAt} = game;
+
   if (finishedAt) {
-    throw new Error("Can't cancel finished game");
+    throw new Error('Can\'t cancel finished game');
   }
 
   if (deletedAt) {
-    throw new Error("Can't cancel canceled game");
+    throw new Error('Can\'t cancel canceled game');
   }
 
   await db
@@ -91,11 +111,6 @@ const cancelGame = async(gameId) => {
  * @return {import('knex').Knex.QueryBuilder<*, *>}
  */
 const getGames = (fields, filters) => {
-  const fieldMap = {
-    createdAt: 'created_at',
-    finishedAt: 'finished_at',
-    deletedAt: 'deleted_at'
-  };
   const query = db
     .select(
       Object.fromEntries(
@@ -119,9 +134,20 @@ const getGames = (fields, filters) => {
   return query;
 }
 
+/**
+ * Находит игру.
+ * @param {int} gameId
+ * @return {import('knex').Knex.QueryBuilder<*, *>}
+ */
+const findGame = (gameId) => db
+  .first(fieldMap)
+  .from('games')
+  .where({id: gameId});
+
 module.exports = {
   startGame,
   finishGame,
   cancelGame,
-  getGames
+  getGames,
+  findGame
 };

@@ -1,4 +1,4 @@
-const {getGames, startGame, finishGame, cancelGame} = require('../models');
+const {getGames, startGame, finishGame, cancelGame, findGame} = require('../models');
 const {parseFilter} = require('../utils');
 
 /**
@@ -53,7 +53,8 @@ const updateGameController = async(
   req,
   res
 ) => {
-  const {gameId, winner} = await req.json();
+  const {gameId} = req.params;
+  const {winner} = await req.json();
 
   if (!gameId) {
     res.status(400).send({error: 'Game id expected'});
@@ -66,7 +67,7 @@ const updateGameController = async(
 
     res.json({success: true});
   } catch (err) {
-    res.status(400).json({error: err.message});
+    res.status(err.message === 'Game not found' ? 404 : 400).json({error: err.message});
   }
 };
 
@@ -79,7 +80,7 @@ const deleteGameController = async(
   req,
   res
 ) => {
-  const {gameId} = await req.json();
+  const {gameId} = req.params;
 
   if (!gameId) {
     res.status(400).send({error: 'Game id expected'});
@@ -92,13 +93,42 @@ const deleteGameController = async(
 
     res.json({success: true});
   } catch (err) {
-    res.status(400).json({error: err.message});
+    res.status( err.message === 'Game not found' ? 404 : 400).json({error: err.message});
   }
 };
+
+/**
+ * Обрабатывает HTTP-запрос на получение игры.
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
+const getGameController = async(
+  req,
+  res
+) => {
+  const {gameId} = req.params;
+
+  if (!gameId) {
+    res.status(400).send({error: 'Game id expected'});
+
+    return;
+  }
+
+  const game = await findGame(gameId);
+
+  if (!game) {
+    res.status(404).json({error: 'Game not found'});
+
+    return;
+  }
+
+  res.json(game);
+}
 
 module.exports = {
   createGameController,
   getGamesController,
   updateGameController,
-  deleteGameController
+  deleteGameController,
+  getGameController
 };
