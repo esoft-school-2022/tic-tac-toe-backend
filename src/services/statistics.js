@@ -7,9 +7,9 @@ const {db} = require('../utils');
 const getStatistics = () => db
   .select({
     login: 'u.login',
-    wins: db.raw('count(g.winner = p.number or null)'),
-    loses: db.raw('count(g.winner <> p.number or null)'),
-    draws: db.raw('count(g.winner is null or null)')
+    wins: db.raw('count(g.winner = p.number or null)::integer'),
+    loses: db.raw('count(g.winner <> p.number or null)::integer'),
+    draws: db.raw('count(g.winner is null or null)::integer')
   })
   .from({u: 'users'})
   .leftJoin({p: 'players'}, {'u.id': 'p.user_id'})
@@ -28,6 +28,9 @@ const getStatistics = () => db
 const getWinRateStatistics = (limit, offset, order = 'desc') => db
   .select({
     login: 'login',
+    total: db.raw('(wins + loses + draws)::integer'),
+    wins: 'wins',
+    loses: 'loses',
     winRate: db.raw('wins::float / (wins + loses + draws)::float')
   })
   .from({stats: getStatistics()})
