@@ -1,4 +1,4 @@
-const {db} = require('../utils');
+const {db, handleWhere} = require('../utils');
 const {NotFoundError, InappropriateActionError} = require('../errors');
 
 const fieldMap = {
@@ -122,13 +122,7 @@ const getGames = (fields, filters) => {
     .from('games');
 
   for (const {operator, left, right} of filters) {
-    if (operator === '=' && right === null) {
-      query.whereNull(fieldMap[left] || left);
-    } else if (operator === '<>' && right === null) {
-      query.whereNotNull(fieldMap[left] || left);
-    } else {
-      query.where(fieldMap[left] || left, operator, right);
-    }
+    handleWhere(fieldMap[left] || left, operator, right, query);
   }
 
   return query;
