@@ -12,9 +12,21 @@ const operatorMap = {
   ew: 'like'
 };
 
+/**
+ * Парсит значение.
+ * @param {string} operator
+ * @param {string} value
+ * @return {string|any}
+ */
 const parseValue = (operator, value) => {
   if (['pr', 'npr'].includes(operator)) {
-    return value.split(',');
+    return value.split(',').map((arrayValue) => {
+      try {
+        return JSON.parse(arrayValue.trim());
+      } catch (err) {
+        return arrayValue.trim();
+      }
+    });
   } else if (operator === 'co') {
     return `%${value}%`;
   } else if (operator === 'sw') {
@@ -31,7 +43,7 @@ const parseValue = (operator, value) => {
 };
 
 /**
- * Парсит фильтр
+ * Парсит фильтр.
  * @param {string} filterQuery
  * @return {{operator: string, left: string, value: *}[]}
  */
@@ -46,7 +58,7 @@ const parseFilter = (filterQuery) => filterQuery
           {
             operator: operatorMap[operator],
             left,
-            right: parseValue(operator, right)
+            right: parseValue(operator, right.trim())
           }
         ];
       },
