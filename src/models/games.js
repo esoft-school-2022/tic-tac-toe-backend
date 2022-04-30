@@ -17,10 +17,9 @@ const fieldMap = {
  */
 const startGame = async(userIds, size = 3) => {
   const [{id: gameId}] = await db
-    .insert({
-      size
-    })
-    .into('games');
+    .insert([{size}])
+    .into('games')
+    .returning('id');
 
   await db
     .insert(
@@ -123,9 +122,9 @@ const getGames = (fields, filters) => {
     .from('games');
 
   for (const {operator, left, right} of filters) {
-    if (operator === 'is' && right === null) {
+    if (operator === '=' && right === null) {
       query.whereNull(fieldMap[left] || left);
-    } else if (operator === 'is not' && right === null) {
+    } else if (operator === '<>' && right === null) {
       query.whereNotNull(fieldMap[left] || left);
     } else {
       query.where(fieldMap[left] || left, operator, right);
