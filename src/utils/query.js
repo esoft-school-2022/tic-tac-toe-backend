@@ -5,11 +5,14 @@ const operatorMap = {
   lt: '<',
   gte: '>=',
   lte: '<=',
-  pr: 'in',
-  npr: 'not in',
+  in: 'in',
+  nin: 'not in',
   co: 'like',
   sw: 'like',
-  ew: 'like'
+  ew: 'like',
+  nco: 'like',
+  nsw: 'like',
+  new: 'like'
 };
 
 /**
@@ -19,19 +22,21 @@ const operatorMap = {
  * @return {string|any}
  */
 const parseValue = (operator, value) => {
-  if (['pr', 'npr'].includes(operator)) {
-    return value.split(',').map((arrayValue) => {
-      try {
-        return JSON.parse(arrayValue.trim());
-      } catch (err) {
-        return arrayValue.trim();
-      }
-    });
-  } else if (operator === 'co') {
+  if (['in', 'nin'].includes(operator)) {
+    return value
+      .split(',')
+      .map((arrayValue) => {
+        try {
+          return JSON.parse(arrayValue.trim());
+        } catch (err) {
+          return arrayValue.trim();
+        }
+      });
+  } else if (['co', 'nco'].includes(operator)) {
     return `%${value}%`;
-  } else if (operator === 'sw') {
+  } else if (['sw', 'nsw'].includes(operator)) {
     return `${value}%`;
-  } else if (operator === 'ew') {
+  } else if (['ew', 'new'].includes(operator)) {
     return `%${value}`;
   } else {
     try {
@@ -51,14 +56,14 @@ const parseFilter = (filterQuery) => filterQuery
     .split('and')
     .reduce(
       (filters, rawFilter) => {
-        const [left, operator, right] = rawFilter.trim().split(' ', 3);
+        const [left, operator, ...right] = rawFilter.trim().split(' ');
 
         return [
           ...filters,
           {
             operator: operatorMap[operator],
             left,
-            right: parseValue(operator, right.trim())
+            right: parseValue(operator, right.join('').trim())
           }
         ];
       },
