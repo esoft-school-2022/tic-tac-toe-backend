@@ -1,4 +1,4 @@
-const {randomString, randomFromArray} = require("../src/utils");
+const {randomString, randomFromArray} = require('../../src/utils');
 
 /**
  * @param {import("knex").Knex} knex
