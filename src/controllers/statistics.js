@@ -3,8 +3,7 @@ const {countPages} = require('../utils');
 
 /**
  * Обрабатывает HTTP-запрос на получение статистики по игрокам.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
+ * @type {import('express').RequestHandler}
  */
 const getWinRateStatisticsController = async(
   req,

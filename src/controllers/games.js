@@ -1,17 +1,18 @@
 const {getGames, startGame, finishGame, cancelGame, findGame} = require('../models');
+const {NotFoundError} = require('../errors');
 const {parseFilter} = require('../utils');
 
 /**
  * Обрабатывает HTTP-запрос на получение игр.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
+ * @type {import('express').RequestHandler}
  */
 const getGamesController = async(
   req,
-  res
+  res,
+  next
 ) => {
   const fields = req.query.fields?.split(',') || ['id', 'winner', 'createdAt', 'finishedAt'];
-  const filters = req.query.filter && parseFilter(req.query.filter) || [];
+  const filters = req.query.filters && parseFilter(req.query.filters) || [];
 
   if (!filters.some(({left}) => left === 'deletedAt')) {
     filters.push({
@@ -21,37 +22,45 @@ const getGamesController = async(
     });
   }
 
-  const games = await getGames(
-    fields,
-    filters
-  );
+  try {
+    const games = await getGames(
+      fields,
+      filters
+    );
 
-  res.json(games);
+    res.json(games);
+  } catch (err) {
+    next(err);
+  }
 };
 
 /**
  * Обрабатывает HTTP-запрос на создание игры.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
+ * @type {import('express').RequestHandler}
  */
 const createGameController = async(
   req,
-  res
+  res,
+  next
 ) => {
-  const {userIds, size = 3} = await req.json();
-  const gameId = await startGame(userIds, size);
+  try {
+    const {userIds, size = 3} = await req.json();
+    const gameId = await startGame(userIds, size);
 
-  res.send({gameId});
+    res.status(201).send({gameId});
+  } catch (err) {
+    next(err);
+  }
 };
 
 /**
  * Обрабатывает HTTP-запрос на обновление игры.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
+ * @type {import('express').RequestHandler}
  */
 const updateGameController = async(
   req,
-  res
+  res,
+  next
 ) => {
   const {gameId} = req.params;
   const {winner} = await req.json();
@@ -67,18 +76,18 @@ const updateGameController = async(
 
     res.json({success: true});
   } catch (err) {
-    res.status(err.message === 'Game not found' ? 404 : 400).json({error: err.message});
+    next(err);
   }
 };
 
 /**
  * Обрабатывает HTTP-запрос на удаление игры.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
+ * @type {import('express').RequestHandler}
  */
 const deleteGameController = async(
   req,
-  res
+  res,
+  next
 ) => {
   const {gameId} = req.params;
 
@@ -93,18 +102,18 @@ const deleteGameController = async(
 
     res.json({success: true});
   } catch (err) {
-    res.status( err.message === 'Game not found' ? 404 : 400).json({error: err.message});
+    next(err);
   }
 };
 
 /**
  * Обрабатывает HTTP-запрос на получение игры.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
+ * @type {import('express').RequestHandler}
  */
 const getGameController = async(
   req,
-  res
+  res,
+  next
 ) => {
   const {gameId} = req.params;
 
@@ -114,15 +123,17 @@ const getGameController = async(
     return;
   }
 
-  const game = await findGame(gameId);
+  try {
+    const game = await findGame(gameId);
 
-  if (!game) {
-    res.status(404).json({error: 'Game not found'});
+    if (!game) {
+      next(new NotFoundError('game', gameId));
+    }
 
-    return;
+    res.json(game);
+  } catch (err) {
+    next(err);
   }
-
-  res.json(game);
 }
 
 module.exports = {

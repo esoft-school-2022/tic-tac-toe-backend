@@ -25,7 +25,7 @@ const parseFilter = (filterQuery) => filterQuery
         return [
           ...filters,
           {
-            operator: operatorMap[operator],
+            operator: operatorMap[operator] || operator,
             left,
             right: right === 'null' ? null : right
           }

@@ -1,4 +1,5 @@
 const {db} = require('../utils');
+const {NotFoundError, InappropriateActionError} = require('../errors');
 
 const fieldMap = {
   id: 'id',
@@ -49,17 +50,17 @@ const finishGame = async(gameId, winner = null) => {
     .where({id: gameId});
 
   if (!game) {
-    throw new Error('Game not found');
+    throw new NotFoundError('game', gameId);
   }
 
   const {finishedAt, deletedAt} = game;
 
   if (deletedAt) {
-    throw new Error('Can\'t finish deleted game');
+    throw new InappropriateActionError('Can\'t finish deleted game');
   }
 
   if (finishedAt) {
-    throw new Error('Can\'t finish finished game');
+    throw new InappropriateActionError('Can\'t finish finished game');
   }
 
   await db
@@ -83,17 +84,17 @@ const cancelGame = async(gameId) => {
     .where({id: gameId});
 
   if (!game) {
-    throw new Error('Game not found');
+    throw new NotFoundError('game', gameId);
   }
 
   const {finishedAt, deletedAt} = game;
 
   if (finishedAt) {
-    throw new Error('Can\'t cancel finished game');
+    throw new InappropriateActionError('Can\'t cancel finished game');
   }
 
   if (deletedAt) {
-    throw new Error('Can\'t cancel canceled game');
+    throw new InappropriateActionError('Can\'t cancel canceled game');
   }
 
   await db
