@@ -28,6 +28,13 @@
   height: fit-content;
 }
 
+.box__title {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 150%;
+  margin-bottom: 24px;
+}
+
 .nav {
   overflow: hidden;
   position: fixed;
@@ -80,3 +87,23 @@
   background: #60C2AA;
   color: #FFFFFF;
 }
+
+.table {}
+
+.table__row {
+  background: #FFFFFF;
+  box-shadow: inset 0 -1px 0 #EEEFF5;
+}
+
+.table__cell {
+  text-align: left;
+  padding: 12px 8px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.table__cell_header {
+  font-weight: 500;
+}
+
