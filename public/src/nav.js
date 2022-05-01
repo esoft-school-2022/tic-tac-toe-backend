@@ -1,7 +1,7 @@
 export default async(goTo) => {
   const responses = await Promise.all([
-    fetch('./assets/svg/cross.svg'),
-    fetch('./assets/svg/circle.svg')
+    fetch('/assets/svg/cross.svg'),
+    fetch('/assets/svg/circle.svg')
   ]);
   const [cross, circle] = await Promise.all(responses.map((response) => response.text()));
   const template = document.createElement('template');

@@ -3,8 +3,8 @@ import nav from './nav.js';
 export default async(goTo) => {
   const fields = ['winner', 'playerOne', 'playerTwo', 'createdAt', 'finishedAt'];
   const responses = await Promise.all([
-    fetch('./assets/svg/cross.svg'),
-    fetch('./assets/svg/circle.svg'),
+    fetch('/assets/svg/cross.svg'),
+    fetch('/assets/svg/circle.svg'),
     fetch(`/api/games?fields=${fields.join(',')}&with=players&limit=15&sort=finishedAt`)
   ]);
   const [cross, circle, games] = await Promise.all(responses.map(

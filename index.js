@@ -6,7 +6,7 @@ const {catchErrors} = require('./src/middlewares');
 const app = express();
 
 app.use(express.json());
-app.use('/assets', express.static(__dirname + '/public/assets'));
+app.use(express.static(__dirname + '/public'));
 app.use('/api', routes);
 app.get('*', (_, res) => {
   res.sendFile(__dirname + '/public/index.html');
