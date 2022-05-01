@@ -125,8 +125,6 @@ const getGames = (fields, filters, sort= null, limit = 10, offset = 0) => {
       )
     )
     .from({g: 'games'})
-    .limit(limit)
-    .offset(offset);
 
   for (const {operator, left, right} of filters) {
     handleWhere(fieldMap[left] || left, operator, right, query);
@@ -145,6 +143,14 @@ const getGames = (fields, filters, sort= null, limit = 10, offset = 0) => {
 
   if (sort) {
     query.orderBy(fieldMap[sort] || sort, 'desc');
+  }
+
+  if (limit) {
+    query.limit(limit);
+  }
+
+  if (offset) {
+    query.offset(offset);
   }
 
   return query;

@@ -25,18 +25,28 @@ const getStatistics = () => db
  * @param {'desc'|'asc'} order
  * @return {import('knex').Knex.QueryBuilder<*, *>}
  */
-const getWinRateStatistics = (limit, offset, order = 'desc') => db
-  .select({
-    login: 'login',
-    total: db.raw('(wins + loses + draws)::integer'),
-    wins: 'wins',
-    loses: 'loses',
-    winRate: db.raw('wins::float / (wins + loses + draws)::float')
-  })
-  .from({stats: getStatistics()})
-  .orderBy('winRate', order)
-  .limit(limit)
-  .offset(offset);
+const getWinRateStatistics = (limit, offset, order = 'desc') => {
+  const query = db
+    .select({
+      login: 'login',
+      total: db.raw('(wins + loses + draws)::integer'),
+      wins: 'wins',
+      loses: 'loses',
+      winRate: db.raw('wins::float / (wins + loses + draws)::float')
+    })
+    .from({stats: getStatistics()})
+    .orderBy('winRate', order);
+
+  if (limit) {
+    query.limit(limit);
+  }
+
+  if (offset) {
+    query.offset(offset);
+  }
+
+  return query;
+}
 
 module.exports = {
   getStatistics,

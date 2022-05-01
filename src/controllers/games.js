@@ -13,7 +13,9 @@ const getGamesController = async(
 ) => {
   const fields = req.query.fields?.split(',') || ['id', 'winner', 'createdAt', 'finishedAt'];
   const filters = req.query.filters && parseFilter(req.query.filters) || [];
-  const {sort, limit, offset} = req.query;
+  const limit = Number(req.query.limit) >= 0 ? Number(req.query.limit) : 10;
+  const offset = Number(req.query.offset) || 0;
+  const {sort} = req.query;
 
   if (!filters.some(({left}) => left === 'deletedAt')) {
     filters.push({
