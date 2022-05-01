@@ -110,13 +110,12 @@ const cancelGame = async(gameId) => {
  * Получает игры.
  * @param {string[]} fields
  * @param {{operator: string, left: string, right: *}[]} filters
- * @param {string[]} joins
  * @param {?string} sort
  * @param {int} limit
  * @param {int} offset
  * @return {import('knex').Knex.QueryBuilder<*, *>}
  */
-const getGames = (fields, filters, joins = [], sort= null, limit = 10, offset = 0) => {
+const getGames = (fields, filters, sort= null, limit = 10, offset = 0) => {
   const query = db
     .select(
       Object.fromEntries(
@@ -133,14 +132,15 @@ const getGames = (fields, filters, joins = [], sort= null, limit = 10, offset = 
     handleWhere(fieldMap[left] || left, operator, right, query);
   }
 
-  for (const join of joins) {
-    if (join === 'players') {
-      query
-        .leftJoin({p1: 'players'}, {'g.id': 'p1.game_id', 'p1.number': 1})
-        .leftJoin({p2: 'players'}, {'g.id': 'p2.game_id', 'p2.number': 2})
-        .leftJoin({u1: 'users'}, {'p1.user_id': 'u1.id'})
-        .leftJoin({u2: 'users'}, {'p2.user_id': 'u2.id'})
-    }
+  if (fields.includes('playerOne')) {
+    query
+      .leftJoin({p1: 'players'}, {'g.id': 'p1.game_id', 'p1.number': 1})
+      .leftJoin({u1: 'users'}, {'p1.user_id': 'u1.id'})
+  }
+  if (fields.includes('playerTwo')) {
+    query
+      .leftJoin({p2: 'players'}, {'g.id': 'p2.game_id', 'p2.number': 2})
+      .leftJoin({u2: 'users'}, {'p2.user_id': 'u2.id'})
   }
 
   if (sort) {

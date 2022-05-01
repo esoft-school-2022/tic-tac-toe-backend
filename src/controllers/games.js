@@ -13,7 +13,6 @@ const getGamesController = async(
 ) => {
   const fields = req.query.fields?.split(',') || ['id', 'winner', 'createdAt', 'finishedAt'];
   const filters = req.query.filters && parseFilter(req.query.filters) || [];
-  const joins = req.query.with?.split(',') || [];
   const {sort, limit, offset} = req.query;
 
   if (!filters.some(({left}) => left === 'deletedAt')) {
@@ -28,7 +27,6 @@ const getGamesController = async(
     const games = await getGames(
       fields,
       filters,
-      joins,
       sort,
       limit,
       offset
