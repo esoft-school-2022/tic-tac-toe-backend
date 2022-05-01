@@ -3,6 +3,11 @@ const routes = {
     handler: () => import('./statistics.js'),
     title: 'Рейнтинг | Tic Tac Toe',
     styleSheet: './assets/css/statistics.css'
+  },
+  '/history': {
+    handler: () => import('./history.js'),
+    title: 'История игр | Tic Tac Toe',
+    styleSheet: './assets/css/history.css'
   }
 };
 

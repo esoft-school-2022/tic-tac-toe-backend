@@ -1,4 +1,4 @@
-const {randomString, randomFromArray} = require('../../src/utils');
+const {randomString, randomFromArray, randomDate} = require('../../src/utils');
 
 /**
  * @param {import("knex").Knex} knex
@@ -26,7 +26,8 @@ exports.seed = async(knex) => {
         .from({length: 20})
         .map(() => ({
           size: 3,
-          winner: randomFromArray([null, 1, 2])
+          winner: randomFromArray([null, 1, 2]),
+          finished_at: randomDate(new Date(), new Date(2022, 5, 30)).toUTCString()
         }))
     )
     .returning('id');
