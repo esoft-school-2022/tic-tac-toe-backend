@@ -163,8 +163,12 @@ const getGames = (fields, filters, sort= null, limit = 10, offset = 0) => {
  */
 const findGame = (gameId) => db
   .first(fieldMap)
-  .from('games')
-  .where({id: gameId});
+  .from({g: 'games'})
+  .leftJoin({p1: 'players'}, {'g.id': 'p1.game_id', 'p1.number': 1})
+  .leftJoin({u1: 'users'}, {'p1.user_id': 'u1.id'})
+  .leftJoin({p2: 'players'}, {'g.id': 'p2.game_id', 'p2.number': 2})
+  .leftJoin({u2: 'users'}, {'p2.user_id': 'u2.id'})
+  .where({'g.id': gameId});
 
 module.exports = {
   startGame,
