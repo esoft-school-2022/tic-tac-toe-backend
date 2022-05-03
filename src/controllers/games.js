@@ -50,7 +50,7 @@ const createGameController = async(
   next
 ) => {
   try {
-    const {userIds, size = 3} = await req.json();
+    const {userIds, size = 3} = req.body;
     const gameId = await startGame(userIds, size);
 
     res.status(201).send({gameId});
@@ -69,7 +69,7 @@ const updateGameController = async(
   next
 ) => {
   const {gameId} = req.params;
-  const {winner} = await req.json();
+  const {winner} = req.body;
 
   if (!gameId) {
     res.status(400).send({error: 'Game id expected'});
