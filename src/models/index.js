@@ -1,3 +1,4 @@
 module.exports = {
-  ...require('./games')
+  ...require('./games'),
+  ...require('./users')
 };
