@@ -6,13 +6,14 @@ const {
   updateUserController,
   deleteUserController
 } = require('../controllers');
+const {catchPromise} = require("../utils/errorHandling");
 
 const router = Router();
 
-router.post('/', createUserController);
-router.get('/', getUsersController);
-router.get('/:userId', getUserController);
-router.put('/:userId', updateUserController);
-router.delete('/:userId', deleteUserController);
+router.post('/', catchPromise(createUserController));
+router.get('/', catchPromise(getUsersController));
+router.get('/:userId', catchPromise(getUserController));
+router.put('/:userId', catchPromise(updateUserController));
+router.delete('/:userId', catchPromise(deleteUserController));
 
 module.exports = router;

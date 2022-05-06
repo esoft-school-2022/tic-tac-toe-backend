@@ -4,12 +4,13 @@ const {parseFilter} = require('../utils');
 
 /**
  * Обрабатывает HTTP-запрос на получение пользователей.
- * @type {import('express').RequestHandler}
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @return {Promise<void>}
  */
 const getUsersController = async(
   req,
-  res,
-  next
+  res
 ) => {
   const fields = req.query.fields?.split(',') || ['id', 'login', 'createdAt'];
   const filters = req.query.filters && parseFilter(req.query.filters) || [];
@@ -25,61 +26,55 @@ const getUsersController = async(
     });
   }
 
-  try {
-    const users = await getUsers(
-      fields,
-      filters,
-      sort,
-      limit,
-      offset
-    );
+  const users = await getUsers(
+    fields,
+    filters,
+    sort,
+    limit,
+    offset
+  );
 
-    res.json(users);
-  } catch (err) {
-    next(err);
-  }
+  res.json(users);
 };
 
 /**
  * Обрабатывает HTTP-запрос на создание пользователя.
- * @type {import('express').RequestHandler}
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @return {Promise<void>}
  */
 const createUserController = async(
   req,
-  res,
-  next
+  res
 ) => {
-  try {
-    const {login, password, status} = req.body;
+  const {login, password, status} = req.body;
 
-    if (!login) {
-      res.status(400).json({error: "Missing login!"});
+  if (!login) {
+    res.status(400).json({error: "Missing login!"});
 
-      return;
-    }
-
-    if (!password) {
-      res.status(400).json({error: "Missing password!"});
-
-      return;
-    }
-
-    const userId = await createUser(login, password, status);
-
-    res.status(201).json({userId});
-  } catch (err) {
-    next(err);
+    return;
   }
+
+  if (!password) {
+    res.status(400).json({error: "Missing password!"});
+
+    return;
+  }
+
+  const userId = await createUser(login, password, status);
+
+  res.status(201).json({userId});
 };
 
 /**
  * Обрабатывает HTTP-запрос на обновление пользователя.
- * @type {import('express').RequestHandler}
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @return {Promise<void>}
  */
 const updateUserController = async(
   req,
-  res,
-  next
+  res
 ) => {
   const {userId} = req.params;
 
@@ -87,75 +82,46 @@ const updateUserController = async(
     res.status(400).json({error: 'Unexpected param!'});
   }
 
-  if (!userId) {
-    res.status(400).json({error: 'User id expected'});
+  await updateUser(userId, req.body);
 
-    return;
-  }
-
-  try {
-    await updateUser(userId, req.body);
-
-    res.json({success: true});
-  } catch (err) {
-    next(err);
-  }
+  res.json({success: true});
 };
 
 /**
  * Обрабатывает HTTP-запрос на удаление пользователя.
- * @type {import('express').RequestHandler}
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @return {Promise<void>}
  */
 const deleteUserController = async(
   req,
-  res,
-  next
+  res
 ) => {
   const {userId} = req.params;
 
-  if (!userId) {
-    res.status(400).json({error: 'User id expected'});
+  await deleteUser(userId);
 
-    return;
-  }
-
-  try {
-    await deleteUser(userId);
-
-    res.json({success: true});
-  } catch (err) {
-    next(err);
-  }
+  res.json({success: true});
 };
 
 /**
  * Обрабатывает HTTP-запрос на получение пользователя.
- * @type {import('express').RequestHandler}
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @return {Promise<void>}
  */
 const getUserController = async(
   req,
-  res,
-  next
+  res
 ) => {
   const {userId} = req.params;
+  const game = await findUser(userId);
 
-  if (!userId) {
-    res.status(400).send({error: 'User id expected'});
-
-    return;
+  if (!game) {
+    throw new NotFoundError('user', userId);
   }
 
-  try {
-    const game = await findUser(userId);
-
-    if (!game) {
-      next(new NotFoundError('user', userId));
-    }
-
-    res.json(game);
-  } catch (err) {
-    next(err);
-  }
+  res.json(game);
 }
 
 module.exports = {

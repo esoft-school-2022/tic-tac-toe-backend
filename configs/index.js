@@ -1,8 +1,5 @@
 module.exports = {
   development: {
-    server: {
-      port: 8080
-    },
     database: {
       client: 'pg',
       connection: {

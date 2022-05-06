@@ -6,13 +6,14 @@ const {
   updateGameController,
   deleteGameController,
 } = require('../controllers');
+const {catchPromise} = require('../utils/errorHandling');
 
 const router = Router();
 
-router.post('/', createGameController);
-router.get('/', getGamesController);
-router.get('/:gameId', getGameController);
-router.put('/:gameId', updateGameController);
-router.delete('/:gameId', deleteGameController);
+router.post('/', catchPromise(createGameController));
+router.get('/', catchPromise(getGamesController));
+router.get('/:gameId', catchPromise(getGameController));
+router.put('/:gameId', catchPromise(updateGameController));
+router.delete('/:gameId', catchPromise(deleteGameController));
 
 module.exports = router;
