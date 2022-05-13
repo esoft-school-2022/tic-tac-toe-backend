@@ -61,9 +61,9 @@ const createUserController = async(
     return;
   }
 
-  const userId = await createUser(login, password, status);
+  const user = await createUser(login, password, status);
 
-  res.status(201).json({userId});
+  res.status(201).json(user);
 };
 
 /**

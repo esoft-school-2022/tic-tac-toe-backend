@@ -16,19 +16,19 @@ const fieldMap = {
  * @param {string} login
  * @param {string} password
  * @param {string} status
- * @return {Promise<int>}
+ * @return {Promise<object>}
  */
 const createUser = async(login, password, status = 'active') => {
-  const [{id: userId}] = await db
+  const [{id, created_at: createdAt, updated_at: updatedAt}] = await db
     .insert([{
       login,
       password: await bcrypt.hash(password, 6),
       status
     }])
     .into('users')
-    .returning('id');
+    .returning(['id', 'login', 'status', 'created_at', 'updated_at']);
 
-  return userId;
+  return {id, login, status, createdAt, updatedAt};
 };
 
 /**
