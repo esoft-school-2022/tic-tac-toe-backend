@@ -134,7 +134,8 @@ const getUsers = (fields, filters, sort= null, limit = 10, offset = 0) => {
 const findUser = (userId) => db
   .first(fieldMap)
   .from({u: 'users'})
-  .where({'u.id': userId});
+  .where({'u.id': userId})
+  .andWhere({'u.status': 'active'});
 
 
 module.exports = {

@@ -1,17 +1,17 @@
 const express = require('express');
-const path = require('path');
-const routes = require('./src/routes');
-const {catchErrors} = require('./src/middlewares');
+const api = require('./src/routes');
+const {catchErrors, auth} = require('./src/middlewares');
 
 const app = express();
-const publicDirectory = path.join(__dirname, '/public');
 
 app.use(express.json());
-app.use(express.static(publicDirectory));
-app.use('/api', routes);
-app.get('*', (_, res) => {
-  res.sendFile(path.join(publicDirectory, '/index.html'));
-});
-app.use(catchErrors);
+app.use(express.static('public', {index: false}));
+app.use(auth.initialize({}));
+app.use('/api', api);
+app.get(
+  '*',
+  (_, res) =>
+    res.sendFile('index.html', {root: 'public'})
+);
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 8080);

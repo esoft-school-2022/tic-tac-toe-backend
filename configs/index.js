@@ -1,5 +1,8 @@
 module.exports = {
   development: {
+    auth: {
+      secret: 'super-secret',
+    },
     database: {
       client: 'pg',
       connection: {

@@ -17,8 +17,12 @@
   },
   "homepage": "https://github.com/esoft-school-2022/tic-tac-toe-backend#readme",
   "dependencies": {
+    "bcrypt": "5.0.1",
     "express": "4.18.0",
+    "jsonwebtoken": "8.5.1",
     "knex": "2.0.0",
+    "passport": "0.5.2",
+    "passport-jwt": "4.0.0",
     "pg": "8.7.3",
     "socket.io": "4.5.0"
   },
