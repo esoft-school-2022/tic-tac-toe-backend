@@ -14,5 +14,13 @@ passport.use(
     verifyAuth
   )
 );
+passport.serializeUser((user, done) => {
+  if (user) {
+    done(null, user);
+  }
+});
+passport.deserializeUser((id, done) => {
+  done(null, id);
+});
 
 module.exports = passport;

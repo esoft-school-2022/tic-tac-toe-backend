@@ -1,4 +1,6 @@
 module.exports = {
   ...require('./db'),
-  ...require('./query')
+  ...require('./query'),
+  ...require('./sockets'),
+  ...require('./errorHandling')
 };

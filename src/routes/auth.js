@@ -1,6 +1,6 @@
 const {Router} = require('express');
 const {createToken, getResource} = require('../controllers/auth');
-const {catchPromise} = require('../utils/errorHandling');
+const {catchPromise} = require('../utils');
 const {auth} = require("../middlewares");
 
 const router = Router();

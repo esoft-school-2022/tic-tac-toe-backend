@@ -1,6 +1,10 @@
+const http = require('http');
 const express = require('express');
+const socketIO = require('socket.io');
 const api = require('./src/routes');
 const {catchErrors, auth} = require('./src/middlewares');
+const messages = require('./src/messages');
+const {wrap} = require('./src/utils');
 
 const app = express();
 
@@ -14,4 +18,22 @@ app.get(
     res.sendFile('index.html', {root: 'public'})
 );
 
-app.listen(process.env.PORT || 8080);
+const server = http.createServer(app);
+const io = socketIO(server);
+
+io.use(wrap(auth.initialize({})));
+io.use(wrap(auth.authenticate('jwt', {}, null)));
+io.use((socket, next) => {
+  if (socket.request.user) {
+    next();
+  } else {
+    socket.disconnect();
+  }
+});
+io.on('connection', async(socket) => {
+  for (const registerMessage of Object.values(messages)) {
+    await registerMessage(io, socket);
+  }
+});
+
+server.listen(process.env.PORT || 8080);

@@ -1,6 +1,6 @@
 const {Router} = require('express');
 const {getWinRateStatisticsController} = require('../controllers');
-const {catchPromise} = require('../utils/errorHandling');
+const {catchPromise} = require('../utils');
 
 const router = Router();
 

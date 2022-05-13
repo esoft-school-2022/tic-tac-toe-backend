@@ -6,7 +6,7 @@ const {
   updateGameController,
   deleteGameController,
 } = require('../controllers');
-const {catchPromise} = require('../utils/errorHandling');
+const {catchPromise} = require('../utils');
 
 const router = Router();
 

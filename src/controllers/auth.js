@@ -49,7 +49,6 @@ const createToken = async(
         } else {
           res
             .status(201)
-            .cookie('token', token)
             .json({token});
         }
       }
