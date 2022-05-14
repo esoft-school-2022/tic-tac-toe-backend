@@ -31,9 +31,13 @@ io.use((socket, next) => {
   }
 });
 io.on('connection', async(socket) => {
-  for (const registerMessage of Object.values(messages)) {
-    await registerMessage(io, socket);
+  for (const {onConnection} of Object.values(messages)) {
+    await onConnection(io, socket);
   }
 });
 
-server.listen(process.env.PORT || 8080);
+server.listen(process.env.PORT || 8080, async() => {
+  for (const {onInit} of Object.values(messages)) {
+    await onInit(io);
+  }
+});
