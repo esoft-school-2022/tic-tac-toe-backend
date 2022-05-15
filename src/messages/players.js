@@ -11,9 +11,9 @@ class PlayersMessenger extends Messenger {
   getPlayersList = async() => Object.values(
       Array.from(await this.io.fetchSockets())
         .map((anotherSocket) => ({
-          id: anotherSocket.request.user.id,
-          login: anotherSocket.request.user.login,
-          isFree: anotherSocket.request.user.isFree,
+          id: anotherSocket.data.id,
+          login: anotherSocket.data.login,
+          isFree: anotherSocket.data.isFree,
           socketId: anotherSocket.id
         }))
         .reduce((players, {id, login, isFree, socketId}) => ({
@@ -35,13 +35,13 @@ class PlayersMessenger extends Messenger {
   }
 
   onConnection = async(socket) => {
-    socket.request.user.isFree = true;
+    socket.data.isFree = true;
 
     socket.on(
       'players:invite',
       async(userId) => {
         const players = await this.getPlayersList();
-        const fromPlayer = players.find(({id}) => id === socket.request.user.id);
+        const fromPlayer = players.find(({id}) => id === socket.data.id);
         const toPlayer = players.find(({id}) => id === userId);
 
         if (fromPlayer && toPlayer && toPlayer.isFree) {
@@ -57,7 +57,7 @@ class PlayersMessenger extends Messenger {
       'players:cancel',
       async(userId) => {
         const players = await this.getPlayersList();
-        const fromPlayer = players.find(({id}) => id === socket.request.user.id);
+        const fromPlayer = players.find(({id}) => id === socket.data.id);
         const toPlayer = players.find(({id}) => id === userId);
 
         if (fromPlayer && toPlayer && toPlayer.isFree) {

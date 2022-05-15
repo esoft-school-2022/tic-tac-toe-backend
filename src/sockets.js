@@ -12,6 +12,8 @@ module.exports = ({server, config, db}) => {
   io.use(wrap(authMiddleware.authenticate('jwt', {}, null)));
   io.use((socket, next) => {
     if (socket.request.user) {
+      socket.data.id = socket.request.user.id;
+      socket.data.login = socket.request.user.login;
       next();
     } else {
       socket.disconnect();
