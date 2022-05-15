@@ -25,7 +25,7 @@ class PlayersMessenger extends Messenger {
   onInit = async() => {
     setInterval(
       async() => {
-        this.io.emit(
+        this.io.local.emit(
           'players:list',
           await this.getPlayersList()
         );

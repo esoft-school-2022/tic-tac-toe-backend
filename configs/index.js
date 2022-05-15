@@ -3,6 +3,7 @@ module.exports = {
     auth: {
       secret: 'super-secret',
     },
+    redis: {},
     database: {
       client: 'pg',
       connection: {
