@@ -1,5 +1,5 @@
-const registerPlayers = require('./players');
+const PlayersMessenger = require('./players');
 
 module.exports = {
-  registerPlayers
+  PlayersMessenger
 };

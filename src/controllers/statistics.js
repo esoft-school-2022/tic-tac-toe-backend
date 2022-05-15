@@ -1,35 +1,40 @@
-const {getWinRateStatistics, getStatistics} = require('../services');
-const {countPages} = require('../utils');
+const {Controller} = require('../base');
+const {StatisticsDAL} = require('../models');
 
-/**
- * Обрабатывает HTTP-запрос на получение статистики по игрокам.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @return {Promise<void>}
- */
-const getWinRateStatisticsController = async(
-  req,
-  res
-) => {
-  const {withPageCount = false, order = 'desc'} = req.query;
-  const limit = Number(req.query.limit) >= 0 ? Number(req.query.limit) : 10;
-  const page = Number(req.query.page);
-  const offset = Number(req.query.offset) || 0;
-  const [statistics, pageCount] = await Promise.all([
-    page ?
-      getWinRateStatistics(limit, (page - 1) * limit, order) :
-      getWinRateStatistics(limit, offset, order),
-    ...withPageCount ?
-      [countPages(limit, getStatistics())] :
-      []
-  ]);
+class StatisticsController extends Controller {
+  constructor({db}) {
+    super();
 
-  res.json({
-    statistics,
-    ...withPageCount ? pageCount : {}
-  });
-};
+    this.stats = new StatisticsDAL({db});
+  }
 
-module.exports = {
-  getWinRateStatisticsController
-};
+  /**
+   * Обрабатывает HTTP-запрос на получение статистики по игрокам.
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @return {Promise<void>}
+   */
+  getWinRateStatistics = async(
+    req,
+    res
+  ) => {
+    const {withPageCount = false, order = 'desc'} = req.query;
+    const limit = Number(req.query.limit) >= 0 ? Number(req.query.limit) : 10;
+    const page = Number(req.query.page);
+    const offset = Number(req.query.offset) || 0;
+    const query = page ?
+      this.stats.getWinRateStatistics(limit, (page - 1) * limit, order) :
+      this.stats.getWinRateStatistics(limit, offset, order);
+    const statistics = withPageCount ?
+      await this.stats.withPages(limit)(query) :
+      await query;
+
+    res.json({
+      statistics: statistics.map(({pageCount, ...rest}) => rest),
+      ...withPageCount ? {pageCount: statistics[0]?.pageCount} : {}
+    });
+  }
+}
+
+
+module.exports = StatisticsController;

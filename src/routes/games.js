@@ -1,19 +1,16 @@
 const {Router} = require('express');
-const {
-  createGameController,
-  getGamesController,
-  getGameController,
-  updateGameController,
-  deleteGameController,
-} = require('../controllers');
+const {GamesController} = require('../controllers');
 const {catchPromise} = require('../utils');
 
-const router = Router();
+module.exports = ({db}) => {
+  const router = Router();
+  const games = new GamesController({db});
 
-router.post('/', catchPromise(createGameController));
-router.get('/', catchPromise(getGamesController));
-router.get('/:gameId', catchPromise(getGameController));
-router.put('/:gameId', catchPromise(updateGameController));
-router.delete('/:gameId', catchPromise(deleteGameController));
+  router.post('/', catchPromise(games.create));
+  router.get('/', catchPromise(games.get));
+  router.get('/:gameId', catchPromise(games.find));
+  router.put('/:gameId', catchPromise(games.update));
+  router.delete('/:gameId', catchPromise(games.delete));
 
-module.exports = router;
+  return router;
+};

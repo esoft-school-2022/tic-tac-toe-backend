@@ -1,9 +1,12 @@
 const {Router} = require('express');
-const {getWinRateStatisticsController} = require('../controllers');
+const {StatisticsController} = require('../controllers');
 const {catchPromise} = require('../utils');
 
-const router = Router();
+module.exports = ({db}) => {
+  const router = Router();
+  const stats = new StatisticsController({db});
 
-router.get('/', catchPromise(getWinRateStatisticsController));
+  router.get('/', catchPromise(stats.getWinRateStatistics));
 
-module.exports = router;
+  return router;
+};

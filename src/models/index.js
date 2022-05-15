@@ -1,4 +1,9 @@
+const GamesDAL = require('./games');
+const StatisticsDAL = require('./statistics');
+const UsersDAL = require('./users');
+
 module.exports = {
-  ...require('./games'),
-  ...require('./users')
+  GamesDAL,
+  StatisticsDAL,
+  UsersDAL
 };

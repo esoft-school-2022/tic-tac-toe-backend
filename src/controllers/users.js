@@ -1,133 +1,135 @@
-const {getUsers, createUser, updateUser, deleteUser, findUser} = require('../models');
+const {Controller} = require('../base');
 const {NotFoundError} = require('../errors');
-const {parseFilter} = require('../utils');
+const {UsersDAL} = require('../models');
 
-/**
- * Обрабатывает HTTP-запрос на получение пользователей.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @return {Promise<void>}
- */
-const getUsersController = async(
-  req,
-  res
-) => {
-  const fields = req.query.fields?.split(',') || ['id', 'login', 'createdAt'];
-  const filters = req.query.filters && parseFilter(req.query.filters) || [];
-  const limit = Number(req.query.limit) >= 0 ? Number(req.query.limit) : 10;
-  const offset = Number(req.query.offset) || 0;
-  const {sort} = req.query;
+class UsersController extends Controller {
+  constructor({db}) {
+    super();
 
-  if (!filters.some(({left}) => left === 'status')) {
-    filters.push({
-      left: 'status',
-      operator: '=',
-      right: 'active'
-    });
+    this.users = new UsersDAL({db});
   }
 
-  const users = await getUsers(
-    fields,
-    filters,
-    sort,
-    limit,
-    offset
-  );
+  /**
+   * Обрабатывает HTTP-запрос на получение пользователей.
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @return {Promise<void>}
+   */
+  get = async(
+    req,
+    res
+  ) => {
+    const fields = req.query.fields?.split(',') || ['id', 'login', 'createdAt'];
+    const filters = req.query.filters && this.parseFilter(req.query.filters) || [];
+    const limit = Number(req.query.limit) >= 0 ? Number(req.query.limit) : 10;
+    const offset = Number(req.query.offset) || 0;
+    const {sort} = req.query;
 
-  res.json(users);
-};
+    if (!filters.some(({left}) => left === 'status')) {
+      filters.push({
+        left: 'status',
+        operator: '=',
+        right: 'active'
+      });
+    }
 
-/**
- * Обрабатывает HTTP-запрос на создание пользователя.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @return {Promise<void>}
- */
-const createUserController = async(
-  req,
-  res
-) => {
-  const {login, password, status} = req.body;
+    const users = await this.users.get(
+      fields,
+      filters,
+      sort,
+      limit,
+      offset
+    );
 
-  if (!login) {
-    res.status(400).json({error: "Missing login!"});
-
-    return;
+    res.json(users);
   }
 
-  if (!password) {
-    res.status(400).json({error: "Missing password!"});
+  /**
+   * Обрабатывает HTTP-запрос на создание пользователя.
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @return {Promise<void>}
+   */
+  create = async(
+    req,
+    res
+  ) => {
+    const {login, password, status} = req.body;
 
-    return;
+    if (!login) {
+      res.status(400).json({error: "Missing login!"});
+
+      return;
+    }
+
+    if (!password) {
+      res.status(400).json({error: "Missing password!"});
+
+      return;
+    }
+
+    const user = await this.users.create(login, password, status);
+
+    res.status(201).json(user);
   }
 
-  const user = await createUser(login, password, status);
+  /**
+   * Обрабатывает HTTP-запрос на обновление пользователя.
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @return {Promise<void>}
+   */
+  update = async(
+    req,
+    res
+  ) => {
+    const {userId} = req.params;
 
-  res.status(201).json(user);
-};
+    if (Object.keys(req.body).some((key) => !['password', 'status'].includes(key))) {
+      res.status(400).json({error: 'Unexpected param!'});
+    }
 
-/**
- * Обрабатывает HTTP-запрос на обновление пользователя.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @return {Promise<void>}
- */
-const updateUserController = async(
-  req,
-  res
-) => {
-  const {userId} = req.params;
+    await this.users.update(userId, req.body);
 
-  if (Object.keys(req.body).some((key) => !['password', 'status'].includes(key))) {
-    res.status(400).json({error: 'Unexpected param!'});
+    res.json({success: true});
   }
 
-  await updateUser(userId, req.body);
+  /**
+   * Обрабатывает HTTP-запрос на удаление пользователя.
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @return {Promise<void>}
+   */
+  delete = async(
+    req,
+    res
+  ) => {
+    const {userId} = req.params;
 
-  res.json({success: true});
-};
+    await this.users.delete(userId);
 
-/**
- * Обрабатывает HTTP-запрос на удаление пользователя.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @return {Promise<void>}
- */
-const deleteUserController = async(
-  req,
-  res
-) => {
-  const {userId} = req.params;
+    res.json({success: true});
+  };
 
-  await deleteUser(userId);
+  /**
+   * Обрабатывает HTTP-запрос на получение пользователя.
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @return {Promise<void>}
+   */
+  find = async(
+    req,
+    res
+  ) => {
+    const {userId} = req.params;
+    const game = await this.users.find(userId);
 
-  res.json({success: true});
-};
+    if (!game) {
+      throw new NotFoundError('user', userId);
+    }
 
-/**
- * Обрабатывает HTTP-запрос на получение пользователя.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @return {Promise<void>}
- */
-const getUserController = async(
-  req,
-  res
-) => {
-  const {userId} = req.params;
-  const game = await findUser(userId);
-
-  if (!game) {
-    throw new NotFoundError('user', userId);
+    res.json(game);
   }
-
-  res.json(game);
 }
 
-module.exports = {
-  createUserController,
-  getUsersController,
-  getUserController,
-  updateUserController,
-  deleteUserController
-};
+module.exports = UsersController;

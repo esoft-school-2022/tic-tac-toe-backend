@@ -1,11 +1,20 @@
 const {Router} = require('express');
-const {createToken, getResource} = require('../controllers/auth');
+const {AuthController} = require('../controllers');
 const {catchPromise} = require('../utils');
-const {auth} = require("../middlewares");
 
-const router = Router();
+module.exports = ({config, db, authenticate}) => {
+  const router = Router();
+  const auth = new AuthController({config, db});
 
-router.post('/token', catchPromise(createToken));
-router.get('/resource', auth.authenticate('jwt', {session: false}, null), getResource);
+  router.post(
+    '/token',
+    catchPromise(auth.createToken)
+  );
+  router.get(
+    '/resource',
+    authenticate,
+    auth.getResource
+  );
 
-module.exports = router;
+  return router;
+};

@@ -11,11 +11,17 @@
  */
 const catchPromise =
   (handler) =>
-    (
+    async(
       req,
       res,
       next
-    ) => handler(req, res).catch(next);
+    ) => {
+      try {
+        await handler(req, res);
+      } catch (err) {
+        next(err);
+      }
+    }
 
 module.exports = {
   catchPromise
