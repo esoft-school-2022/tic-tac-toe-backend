@@ -1,4 +1,4 @@
-const socketIO = require('socket.io');
+const {Server} = require('socket.io');
 const messages = require('./messages');
 const {auth} = require('./middlewares');
 const {wrap} = require('./utils');

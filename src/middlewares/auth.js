@@ -10,7 +10,10 @@ module.exports = ({db, config}) => {
     new Strategy(
       {
         secretOrKey: config.auth.secret,
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        jwtFromRequest: ExtractJwt.fromExtractors([
+          ExtractJwt.fromAuthHeaderAsBearerToken(),
+          ExtractJwt.fromUrlQueryParameter('token')
+        ]),
         ...config.auth.options
       },
       auth.verifyAuth
