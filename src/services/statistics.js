@@ -6,7 +6,8 @@ const {db} = require('../utils');
  */
 const getStatistics = () => db
   .select({
-    login: 'u.login',
+    id: 'u.id',
+    login: db.raw('max(u.login)'),
     wins: db.raw('count(g.winner = p.number or null)::integer'),
     loses: db.raw('count(g.winner <> p.number or null)::integer'),
     draws: db.raw('count(g.winner is null or null)::integer')
@@ -14,7 +15,7 @@ const getStatistics = () => db
   .from({u: 'users'})
   .leftJoin({p: 'players'}, {'u.id': 'p.user_id'})
   .leftJoin({g: 'games'}, {'p.game_id': 'g.id'})
-  .groupBy('u.login');
+  .groupBy('u.id');
 
 
 /**
@@ -28,6 +29,7 @@ const getStatistics = () => db
 const getWinRateStatistics = (limit, offset, order = 'desc') => {
   const query = db
     .select({
+      id: 'id',
       login: 'login',
       total: db.raw('(wins + loses + draws)::integer'),
       wins: 'wins',
@@ -48,7 +50,11 @@ const getWinRateStatistics = (limit, offset, order = 'desc') => {
   return query;
 }
 
+const getPlayerWinRateStatistics = (userId) => getWinRateStatistics(0, 0)
+  .where('id', '=', userId)
+
 module.exports = {
   getStatistics,
-  getWinRateStatistics
+  getWinRateStatistics,
+  getPlayerWinRateStatistics
 };
