@@ -13,6 +13,10 @@ module.exports = {
         password: 'Passw0rd',
         database: 'tic_tac_toe'
       },
+      pool: {
+        min: 4,
+        max: 16
+      },
       migrations: {
         tableName: 'migrations',
         directory: './db/migrations'
