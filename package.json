@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/esoft-school-2022/tic-tac-toe-backend#readme",
   "dependencies": {
+    "@socket.io/redis-adapter": "7.2.0",
     "bcrypt": "5.0.1",
     "express": "4.18.0",
     "jsonwebtoken": "8.5.1",
@@ -24,6 +25,7 @@
     "passport": "0.5.2",
     "passport-jwt": "4.0.0",
     "pg": "8.7.3",
+    "redis": "4.1.0",
     "socket.io": "4.5.0"
   },
   "devDependencies": {
