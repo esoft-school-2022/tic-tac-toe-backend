@@ -4,7 +4,7 @@ const {auth} = require('./middlewares');
 const {wrap} = require('./utils');
 
 module.exports = ({server, config, db}) => {
-  const io = socketIO(server);
+  const io = new Server(server);
   const messengers = Object.values(messages).map((Messenger) => new Messenger({io, config, db}));
   const authMiddleware = auth({config, db});
 
