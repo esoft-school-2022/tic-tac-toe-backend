@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx run pm2 start ecosystem.config.js",
-    "watch": "npx run pm2 start ecosystem.config.js --watch --node-args '--inspect'"
+    "start": "npx pm2 start ecosystem.config.js",
+    "watch": "npx pm2 start ecosystem.config.js --watch --node-args '--inspect'"
   },
   "repository": {
     "type": "git",
