@@ -4,6 +4,7 @@ module.exports = {
     script: 'index.js',
     exec_mode: 'cluster',
     instances: 4,
+    wait_ready: true,
     env: {
       PORT: 3000,
       NODE_ENV: 'development'

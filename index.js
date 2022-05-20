@@ -17,16 +17,31 @@ const configureSockets = require('./src/sockets');
     'SIGINT',
     async() => {
       try {
-        await injects.db.destroy();
-        await injects.broker.pub.disconnect();
-        await injects.broker.sub.disconnect();
+        await Promise.all([
+          injects.db.destroy(),
+          injects.broker.pub.disconnect(),
+          injects.broker.sub.disconnect()
+        ]);
 
-        process.exit(0);
+        injects.server.close(
+          (err) => {
+            process.exit(err ? 1 : 0);
+          }
+        );
       } catch (err) {
         process.exit(1);
       }
     }
   );
 
-  injects.server.listen(process.env.PORT || 8080, await configureSockets(injects));
+  const initSockets = await configureSockets(injects);
+
+  injects.server.listen(
+    process.env.PORT || 8080,
+    async() => {
+      await initSockets();
+
+      process.send('ready');
+    }
+  );
 })();
