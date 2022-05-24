@@ -160,6 +160,10 @@ class GamesMessenger extends Messenger {
             )
           ]);
 
+          if (!activeGames.flat().length) {
+            return;
+          }
+
           await this.games.updateMany(
             activeGames.map(
               (activesGamesSet, offset) =>
