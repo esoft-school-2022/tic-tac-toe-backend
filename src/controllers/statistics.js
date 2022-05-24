@@ -34,6 +34,21 @@ class StatisticsController extends Controller {
       ...withPageCount ? {pageCount: statistics[0]?.pageCount} : {}
     });
   }
+
+  /**
+   * Обрабатывает HTTP-запрос на получение статистики по игроку.
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @return {Promise<void>}
+   */
+  getPlayerWinRateStatistics = async(
+    req,
+    res
+  ) => {
+    const {playerId} = req.params;
+
+    res.json(await this.stats.getPlayerWinRateStatistics(playerId));
+  }
 }
 
 

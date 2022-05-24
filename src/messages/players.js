@@ -8,41 +8,46 @@ class PlayersMessenger extends Messenger {
     this.games = new GamesDAL({db});
   }
 
-  getPlayersList = async() => Object.values(
-      Array.from(await this.io.fetchSockets())
-        .map((anotherSocket) => ({
-          id: anotherSocket.data.id,
-          login: anotherSocket.data.login,
-          isFree: anotherSocket.data.isFree,
-          socketId: anotherSocket.id
-        }))
-        .reduce((players, {id, login, isFree, socketId}) => ({
-          ...players,
-          [id]: {id, login, isFree, socketIds: [...players[id]?.socketIds || [], socketId]}
-        }), {})
-    );
+  getPlayersList = async () => Array.from(await this.io.fetchSockets())
+    .map((anotherSocket) => ({
+      id: anotherSocket.data.id,
+      login: anotherSocket.data.login,
+      isFree: !Array
+        .from(anotherSocket.adapter.rooms.keys())
+        .some((key) => Boolean(key.match(/game#\d+/))),
+      socketId: anotherSocket.id
+    }))
+    .reduce((players, {id, login, isFree, socketId}) => ({
+      ...players,
+      [id]: {
+        id,
+        login,
+        isFree: (players[id]?.isFree || true) && isFree,
+        socketIds: [...players[id]?.socketIds || [], socketId]
+      }
+    }), {});
 
-  onInit = async() => {
+  onInit = async () => {
     setInterval(
-      async() => {
+      async () => {
         this.io.local.emit(
           'players:list',
-          await this.getPlayersList()
+          Object.values(await this.getPlayersList())
         );
       },
-  2000
+      2000
     );
   }
 
-  onConnection = async(socket) => {
+  onConnection = async (socket) => {
     socket.data.isFree = true;
 
     socket.on(
       'players:invite',
-      async(userId) => {
+      async (userId) => {
         const players = await this.getPlayersList();
-        const fromPlayer = players.find(({id}) => id === socket.data.id);
-        const toPlayer = players.find(({id}) => id === userId);
+        const fromPlayer = players[socket.data.id];
+        const toPlayer = players[userId];
 
         if (fromPlayer && toPlayer && toPlayer.isFree) {
           this.io
@@ -55,10 +60,10 @@ class PlayersMessenger extends Messenger {
     );
     socket.on(
       'players:cancel',
-      async(userId) => {
+      async (userId) => {
         const players = await this.getPlayersList();
-        const fromPlayer = players.find(({id}) => id === socket.data.id);
-        const toPlayer = players.find(({id}) => id === userId);
+        const fromPlayer = players[socket.data.id];
+        const toPlayer = players[userId];
 
         if (fromPlayer && toPlayer && toPlayer.isFree) {
           this.io
@@ -79,7 +84,7 @@ class PlayersMessenger extends Messenger {
     );
     socket.on(
       'players:accept',
-      async({from, to}) => {
+      async ({from, to}) => {
         const gameId = await this.games.create([from.id, to.id]);
 
         this.io

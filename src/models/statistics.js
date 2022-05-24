@@ -27,27 +27,27 @@ class StatisticsDAL extends DAL {
    * @return {import('knex').Knex.QueryBuilder<*, *>}
    */
    getWinRateStatistics = (limit, offset, order = 'desc') => {
-    const query = this.db
-      .select({
-        id: 'id',
-        login: 'login',
-        total: this.db.raw('(wins + loses + draws)::integer'),
-        wins: 'wins',
-        loses: 'loses',
-        winRate: this.db.raw('wins::float / (wins + loses + draws)::float')
-      })
-      .from({stats: this.getStatistics()})
-      .orderBy('winRate', order);
+     const query = this.db
+       .select({
+         id: 'id',
+         login: 'login',
+         total: this.db.raw('(wins + loses + draws)::integer'),
+         wins: 'wins',
+         loses: 'loses',
+         winRate: this.db.raw('wins::float / (wins + loses + draws)::float')
+       })
+       .from({stats: this.getStatistics()})
+       .orderBy('winRate', order);
 
-    if (limit) {
-      query.limit(limit);
-    }
+     if (limit) {
+       query.limit(limit);
+     }
 
-    if (offset) {
-      query.offset(offset);
-    }
+     if (offset) {
+       query.offset(offset);
+     }
 
-    return query;
+     return query;
   }
 
   /**

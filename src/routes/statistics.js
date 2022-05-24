@@ -7,6 +7,7 @@ module.exports = ({db}) => {
   const stats = new StatisticsController({db});
 
   router.get('/', catchPromise(stats.getWinRateStatistics));
+  router.get('/:playerId', catchPromise(stats.getPlayerWinRateStatistics));
 
   return router;
 };
