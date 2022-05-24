@@ -12,8 +12,7 @@ class PlayersMessenger extends Messenger {
     .map((anotherSocket) => ({
       id: anotherSocket.data.id,
       login: anotherSocket.data.login,
-      isFree: !Array
-        .from(anotherSocket.adapter.rooms.keys())
+      isFree: !Array.from(anotherSocket.operator?.rooms || anotherSocket.rooms)
         .some((key) => Boolean(key.match(/game#\d+/))),
       socketId: anotherSocket.id
     }))
