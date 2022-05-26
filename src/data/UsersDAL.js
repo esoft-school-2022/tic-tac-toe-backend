@@ -29,6 +29,15 @@ class UsersDAL extends DAL {
       .into('users')
       .returning(['id', 'login', 'status', 'created_at', 'updated_at']);
 
+    await this.db
+      .insert([{
+        user_id: id,
+        entity: 'users',
+        entity_id: id,
+        level: 1 << 0 | 1 << 1
+      }])
+      .into('accesses');
+
     return {id, login, status, createdAt, updatedAt};
   }
 

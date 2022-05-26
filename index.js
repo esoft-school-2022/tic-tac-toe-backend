@@ -1,7 +1,7 @@
 const http = require('http');
 const configs = require('./configs');
 const configureApp = require('./src/app');
-const configurePubSub = require('./src/pubsub');
+const configureBroker = require('./src/broker');
 const configureDb = require('./src/db');
 const configureSockets = require('./src/sockets');
 const {auth} = require('./src/middlewares');
@@ -12,7 +12,7 @@ const {auth} = require('./src/middlewares');
   injects.config = configs[process.env.NODE_ENV || 'development']
   injects.db = await configureDb(injects);
   injects.auth = auth(injects);
-  injects.pubSub = await configurePubSub(injects);
+  injects.broker = await configureBroker(injects);
   injects.server = http.createServer(await configureApp(injects));
 
   process.on(
@@ -21,8 +21,8 @@ const {auth} = require('./src/middlewares');
       try {
         await Promise.all([
           injects.db.destroy(),
-          injects.pubSub.pub.disconnect(),
-          injects.pubSub.sub.disconnect()
+          injects.broker.pub.disconnect(),
+          injects.broker.sub.disconnect()
         ]);
 
         injects.server.close(

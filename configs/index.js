@@ -3,7 +3,7 @@ module.exports = {
     auth: {
       secret: 'super-secret',
     },
-    pubSub: {
+    broker: {
       url: 'redis://127.0.0.1:6379'
     },
     serveStatic: true,

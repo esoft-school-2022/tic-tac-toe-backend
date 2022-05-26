@@ -3,7 +3,7 @@ const {createAdapter} = require('@socket.io/redis-adapter');
 const Messengers = require('./messengers');
 const {wrap} = require('./utils');
 
-module.exports = ({server, config, db, pubSub, auth}) => {
+module.exports = ({server, config, db, broker, auth}) => {
   const io = new Server(
     server,
     {
@@ -14,7 +14,7 @@ module.exports = ({server, config, db, pubSub, auth}) => {
     (Messenger) => new Messenger({io, config, db})
   );
 
-  io.adapter(createAdapter(pubSub.pub, pubSub.sub));
+  io.adapter(createAdapter(broker.pub, broker.sub));
   io.use(wrap(auth.initialize));
   io.use(wrap(auth.authenticate));
   io.use((socket, next) => {

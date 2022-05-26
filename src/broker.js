@@ -1,7 +1,7 @@
 const {createClient} = require('redis');
 
 module.exports = async({config}) => {
-  const pub = createClient(config.pubSub);
+  const pub = createClient(config.broker);
   const sub = pub.duplicate();
 
   await pub.connect();

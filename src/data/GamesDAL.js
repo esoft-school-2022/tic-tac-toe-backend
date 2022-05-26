@@ -28,17 +28,31 @@ class GamesDAL extends DAL {
       .into('games')
       .returning('id');
 
-    await this.db
-      .insert(
-        userIds.map(
-          (userId, idx) => ({
-            user_id: userId,
-            game_id: gameId,
-            number: idx + 1
-          })
+    await Promise.all([
+      this.db
+        .insert(
+          userIds.map(
+            (userId, idx) => ({
+              user_id: userId,
+              game_id: gameId,
+              number: idx + 1
+            })
+          )
         )
-      )
-      .into('players');
+        .into('players'),
+      this.db
+        .insert(
+          userIds.map(
+            (userId) => ({
+              user_id: userId,
+              entity: 'games',
+              entity_id: gameId,
+              level: 1 << 0 | 1 << 1
+            })
+          )
+        )
+        .into('accesses')
+    ])
 
     return gameId;
   }
