@@ -6,5 +6,6 @@ module.exports = Object
     (config, [env, {database}]) => ({
       ...config,
       [env]: database
-    })
+    }),
+    {}
   );
