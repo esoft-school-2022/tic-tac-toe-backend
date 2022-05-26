@@ -8,9 +8,9 @@ module.exports = ({db}) => {
 
   router.post('/', catchPromise(users.create));
   router.get('/', catchPromise(users.get));
-  router.get('/:gameId', catchPromise(users.find));
-  router.put('/:gameId', catchPromise(users.update));
-  router.delete('/:gameId', catchPromise(users.delete));
+  router.get('/:userId', catchPromise(users.find));
+  router.put('/:userId', catchPromise(users.update));
+  router.delete('/:userId', catchPromise(users.delete));
 
   return router;
 };

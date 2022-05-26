@@ -25,7 +25,7 @@ class AuthController extends Controller {
   ) => {
     const {login, password} = req.body;
     const [user] = await this.users.get(
-      ['id', 'password'],
+      ['id', 'login', 'password'],
       [
         {
           left: 'login',
