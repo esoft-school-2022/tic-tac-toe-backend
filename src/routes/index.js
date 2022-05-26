@@ -1,17 +1,16 @@
 const {Router} = require('express');
-const auth = require('./auth');
-const statistics = require('./statistics');
-const games = require('./games');
-const users = require('./users');
+const authRouter = require('./auth');
+const statisticsRouter = require('./statistics');
+const gamesRouter = require('./games');
+const usersRouter = require('./users');
 
-module.exports = ({config, db, authMiddleware}) => {
+module.exports = ({config, db, auth}) => {
   const router = Router();
-  const authenticate = authMiddleware.authenticate('jwt', {session: false}, null);
 
-  router.use('/auth', auth({config, db, authenticate}));
-  router.use('/statistics', authenticate, statistics({db}));
-  router.use('/games', authenticate, games({db}));
-  router.use('/users', authenticate, users({db}));
+  router.use('/auth', authRouter({config, db, auth}));
+  router.use('/statistics', auth.authenticate, statisticsRouter({db}));
+  router.use('/games', auth.authenticate, gamesRouter({db}));
+  router.use('/users', auth.authenticate, usersRouter({db}));
 
   return router;
 };

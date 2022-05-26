@@ -1,5 +1,5 @@
 const {Messenger} = require('../base');
-const {GamesDAL} = require('../models');
+const {GamesDAL} = require('../data');
 
 class PlayersMessenger extends Messenger {
   constructor({io, db}) {
@@ -39,8 +39,6 @@ class PlayersMessenger extends Messenger {
   }
 
   onConnection = async (socket) => {
-    socket.data.isFree = true;
-
     socket.on(
       'players:invite',
       async (userId) => {

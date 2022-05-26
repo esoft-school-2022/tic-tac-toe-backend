@@ -1,5 +1,5 @@
 const {Controller} = require('../base');
-const {GamesDAL} = require('../models');
+const {GamesDAL} = require('../data');
 const {NotFoundError} = require('../errors');
 
 class GamesController extends Controller {

@@ -1,7 +1,10 @@
-const config = require('./configs');
+const configs = require('./configs');
 
-module.exports = {
-  development: config.development.database,
-  stage: config.stage.database,
-  production: config.production.database
-};
+module.exports = Object
+  .entries(configs)
+  .reduce(
+    (config, [env, {database}]) => ({
+      ...config,
+      [env]: database
+    })
+  );

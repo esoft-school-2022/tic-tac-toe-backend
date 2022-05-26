@@ -28,5 +28,8 @@ module.exports = ({db, config}) => {
     done(null, id);
   });
 
-  return passport;
+  return {
+    initialize: passport.initialize({}),
+    authenticate: passport.authenticate('jwt', {session: false}, null)
+  };
 };

@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx pm2 start ecosystem.config.js",
-    "debug": "PORT=3000 npx pm2 start index.js --attach --watch --node-args='--inspect'"
+    "start": "npx pm2 start ecosystem.config.js --attach",
+    "debug": "npx pm2 start index.js --attach --watch --node-args='--inspect' --name='tic-tac-toe'",
+    "db": "npx knex"
   },
   "repository": {
     "type": "git",

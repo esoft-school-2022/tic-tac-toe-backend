@@ -1,15 +1,19 @@
 const express = require('express');
-const {catchErrors, auth} = require('./middlewares');
+const {catchErrors} = require('./middlewares');
 const api = require('./routes');
 
-module.exports = ({config, db}) => {
+module.exports = ({config, db, auth}) => {
   const app = express();
-  const authMiddleware = auth({config, db});
 
   app.use(express.json());
-  app.use(authMiddleware.initialize({}));
-  app.use('/api', api({config, db, authMiddleware}));
+  app.use(auth.initialize);
+  app.use('/api', api({config, db, auth}));
   app.use(catchErrors);
+
+  if (config.serveStatic) {
+    app.use(express.static('public', {index: false}));
+    app.use('*', (_, res) => res.sendFile('index.html', {root: 'public'}));
+  }
 
   return app;
 };

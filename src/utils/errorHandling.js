@@ -2,6 +2,7 @@
  * @callback AsyncHandler
  * @param {import('express').Request} req
  * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
  * @return {Promise<void>}
  */
 /**
@@ -17,7 +18,7 @@ const catchPromise =
       next
     ) => {
       try {
-        await handler(req, res);
+        await handler(req, res, next);
       } catch (err) {
         next(err);
       }

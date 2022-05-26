@@ -6,14 +6,14 @@ module.exports = {
     instances: 4,
     wait_ready: true,
     env: {
-      PORT: 3000,
-      NODE_ENV: 'development'
+      PORT: 12321
     },
     env_development: {
       NODE_ENV: 'development'
     },
     env_production: {
-      NODE_ENV: 'production'
+      NODE_ENV: 'production',
+      SERVE_STATIC: false
     }
   }]
 };

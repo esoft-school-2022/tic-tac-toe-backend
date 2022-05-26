@@ -1,7 +1,7 @@
 const {Messenger} = require('../base');
-const {GamesDAL} = require('../models');
-const PlayersMessenger = require('./players');
-const {TicTacToe} = require('../entities/tic-tac-toe');
+const {GamesDAL} = require('../data');
+const PlayersMessenger = require('./PlayersMessenger');
+const {TicTacToe} = require('../entities/TicTacToe');
 
 class GamesMessenger extends Messenger {
   constructor({io, db}) {

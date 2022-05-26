@@ -1,22 +1,22 @@
 const {Server} = require('socket.io');
 const {createAdapter} = require('@socket.io/redis-adapter');
-const messages = require('./messages');
-const {auth} = require('./middlewares');
+const Messengers = require('./messengers');
 const {wrap} = require('./utils');
 
-module.exports = ({server, config, db, broker}) => {
+module.exports = ({server, config, db, pubSub, auth}) => {
   const io = new Server(
     server,
     {
       transports: ['websocket']
     }
   );
-  const messengers = Object.values(messages).map((Messenger) => new Messenger({io, config, db}));
-  const authMiddleware = auth({config, db});
+  const messengers = Object.values(Messengers).map(
+    (Messenger) => new Messenger({io, config, db})
+  );
 
-  io.adapter(createAdapter(broker.pub, broker.sub));
-  io.use(wrap(authMiddleware.initialize({})));
-  io.use(wrap(authMiddleware.authenticate('jwt', {}, null)));
+  io.adapter(createAdapter(pubSub.pub, pubSub.sub));
+  io.use(wrap(auth.initialize));
+  io.use(wrap(auth.authenticate));
   io.use((socket, next) => {
     if (socket.request.user) {
       socket.data.id = socket.request.user.id;

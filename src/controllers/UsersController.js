@@ -1,6 +1,6 @@
 const {Controller} = require('../base');
 const {NotFoundError} = require('../errors');
-const {UsersDAL} = require('../models');
+const {UsersDAL} = require('../data');
 
 class UsersController extends Controller {
   constructor({db}) {

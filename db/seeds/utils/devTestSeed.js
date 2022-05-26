@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 /**
  * Генерирует рандомную строку.
  * @param length
@@ -43,17 +45,22 @@ const randomDate = (startDate, endDate, startHour= 0, endHour= 24) => {
  * @returns {Promise<void>}
  */
 exports.seed = async(knex) => {
-  await knex.raw('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
-  await knex.raw('TRUNCATE TABLE games RESTART IDENTITY CASCADE');
-
   const userIds = await knex
     .insert(
       Array
         .from({length: 20})
-        .map(() => ({
-          login: randomString(),
-          password: randomString()
-        }))
+        .map(() => {
+          const login = randomString();
+          const raw = randomString();
+          const password = bcrypt.hashSync(raw, 6);
+
+          console.log(`${login}:${raw}`);
+
+          return {
+            login,
+            password
+          }
+        })
     )
     .into('users')
     .returning('id');

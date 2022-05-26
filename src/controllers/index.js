@@ -1,7 +1,7 @@
-const AuthController = require('./auth');
-const GamesController = require('./games');
-const StatisticsController = require('./statistics');
-const UsersController = require('./users');
+const AuthController = require('./AuthController');
+const GamesController = require('./GamesController');
+const StatisticsController = require('./StatisticsController');
+const UsersController = require('./UsersController');
 
 module.exports = {
   AuthController,

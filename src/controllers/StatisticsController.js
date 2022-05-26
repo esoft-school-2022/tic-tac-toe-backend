@@ -1,5 +1,5 @@
 const {Controller} = require('../base');
-const {StatisticsDAL} = require('../models');
+const {StatisticsDAL} = require('../data');
 
 class StatisticsController extends Controller {
   constructor({db}) {

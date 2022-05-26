@@ -2,18 +2,18 @@ const {Router} = require('express');
 const {AuthController} = require('../controllers');
 const {catchPromise} = require('../utils');
 
-module.exports = ({config, db, authenticate}) => {
+module.exports = ({config, db, auth}) => {
   const router = Router();
-  const auth = new AuthController({config, db});
+  const authController = new AuthController({config, db});
 
   router.post(
     '/token',
-    catchPromise(auth.createToken)
+    catchPromise(authController.createToken)
   );
   router.get(
     '/resource',
-    authenticate,
-    auth.getResource
+    auth.authenticate,
+    authController.getResource
   );
 
   return router;

@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {Controller} = require('../base');
-const {UsersDAL} = require('../models');
+const {UsersDAL} = require('../data');
 
 class AuthController extends Controller {
   constructor({db, config}) {
@@ -48,7 +48,12 @@ class AuthController extends Controller {
 
     if (await bcrypt.compare(password, user.password)) {
       jwt.sign(
-        {sub: user.id},
+        {
+          sub: {
+            id: user.id,
+            login: user.login
+          }
+        },
         this.authConfig.secret,
         this.authConfig.options,
         (error, token) => {
@@ -87,10 +92,8 @@ class AuthController extends Controller {
    */
   verifyAuth = async(payload, done) => {
     try {
-      const user = await this.users.find(payload.sub);
-
-      if (user) {
-        return done(null, {...user, password: undefined});
+      if (payload.sub) {
+        return done(null, {id: payload.sub.id, login: payload.sub.login});
       } else {
         return done(null, false);
       }

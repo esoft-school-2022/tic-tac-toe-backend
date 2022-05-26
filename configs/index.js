@@ -3,50 +3,16 @@ module.exports = {
     auth: {
       secret: 'super-secret',
     },
-    redis: {
+    pubSub: {
       url: 'redis://127.0.0.1:6379'
     },
+    serveStatic: true,
     database: {
       client: 'pg',
-      connection: {
-        host: '127.0.0.1',
-        port: 5432,
-        user: 'tic_tac_toe',
-        password: 'Passw0rd',
-        database: 'tic_tac_toe'
-      },
+      connection: 'postgresql://tic_tac_toe:Passw0rd@localhost:5432/tic_tac_toe',
       pool: {
         min: 4,
         max: 16
-      },
-      migrations: {
-        tableName: 'migrations',
-        directory: './db/migrations'
-      },
-      seeds: {
-        directory: './db/seeds'
-      }
-    }
-  },
-  stage: {
-    auth: {
-      secret: process.env.AUTH_SECRET,
-    },
-    redis: {
-      url: process.env.REDIS_URL
-    },
-    database: {
-      client: 'pg',
-      connection: {
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: process.env.DB_NAME
-      },
-      pool: {
-        min: process.env.DB_MIN_POOL,
-        max: process.env.DB_MAX_POOL
       },
       migrations: {
         tableName: 'migrations',
@@ -61,21 +27,16 @@ module.exports = {
     auth: {
       secret: process.env.AUTH_SECRET,
     },
-    redis: {
+    pubSub: {
       url: process.env.REDIS_URL
     },
+    serveStatic: Boolean(process.env.SERVE_STATIC),
     database: {
       client: 'pg',
-      connection: {
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: process.env.DB_NAME
-      },
+      connection: process.env.DB_URL,
       pool: {
-        min: process.env.DB_MIN_POOL,
-        max: process.env.DB_MAX_POOL
+        min: Number(process.env.DB_MIN_POOL),
+        max: Number(process.env.DB_MAX_POOL)
       },
       migrations: {
         tableName: 'migrations',
