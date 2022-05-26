@@ -11,7 +11,7 @@ class StatisticsDAL extends DAL {
         login: this.db.raw('max(u.login)'),
         wins: this.db.raw('count(g.winner = p.number or null)::integer'),
         loses: this.db.raw('count(g.winner <> p.number or null)::integer'),
-        draws: this.db.raw('count(g.winner is null or null)::integer')
+        draws: this.db.raw('count(g.id is not null and g.winner is null or null)::integer')
       })
       .from({u: 'users'})
       .leftJoin({p: 'players'}, {'u.id': 'p.user_id'})
@@ -34,7 +34,12 @@ class StatisticsDAL extends DAL {
          total: this.db.raw('(wins + loses + draws)::integer'),
          wins: 'wins',
          loses: 'loses',
-         winRate: this.db.raw('wins::float / (wins + loses + draws)::float')
+         winRate: this.db.raw(`
+           case when (wins + loses + draws)::integer <> 0
+             then wins::float / (wins + loses + draws)::float
+             else 0::float
+           end
+         `)
        })
        .from({stats: this.getStatistics()})
        .orderBy('winRate', order);
