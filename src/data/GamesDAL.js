@@ -13,7 +13,7 @@ class GamesDAL extends DAL {
     playerOne: 'u1.login',
     playerTwoId: 'u2.id',
     playerTwo: 'u2.login',
-    moves: this.db.raw('json_agg(m)')
+    moves: this.db.raw('COALESCE(json_agg(m) FILTER (WHERE m.id IS NOT NULL), \'[]\')')
   };
 
   /**

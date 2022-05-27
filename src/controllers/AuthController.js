@@ -25,7 +25,7 @@ class AuthController extends Controller {
   ) => {
     const {login, password} = req.body;
     const [user] = await this.users.get(
-      ['id', 'login', 'password'],
+      ['id', 'login', 'accesses', 'rights', 'password'],
       [
         {
           left: 'login',
@@ -51,7 +51,9 @@ class AuthController extends Controller {
         {
           sub: {
             id: user.id,
-            login: user.login
+            login: user.login,
+            rights: user.rights,
+            accesses: user.accesses
           }
         },
         this.authConfig.secret,
@@ -93,7 +95,7 @@ class AuthController extends Controller {
   verifyAuth = async(payload, done) => {
     try {
       if (payload.sub) {
-        return done(null, {id: payload.sub.id, login: payload.sub.login});
+        return done(null, payload.sub);
       } else {
         return done(null, false);
       }

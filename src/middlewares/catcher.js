@@ -1,4 +1,4 @@
-const {NotFoundError, InappropriateActionError} = require("../errors");
+const {NotFoundError, InappropriateActionError, AccessDeniedError} = require('../errors');
 
 /**
  * Перехватывает ошибки.
@@ -14,6 +14,8 @@ const catchErrors = (
     res.status(404).json({error: err.message, entity: err.entity, entityId: err.entityId});
   } else if (err instanceof InappropriateActionError) {
     res.status(400).json({error: err.message, cause: err.cause});
+  } else if (err instanceof AccessDeniedError) {
+    res.status(403).json({error: err.message, issuer: err.issuer, resource: err.resource});
   } else {
     res.status(500).json({error: 'Internal Server Error'});
   }

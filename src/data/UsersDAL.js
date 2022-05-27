@@ -9,7 +9,9 @@ class UsersDAL extends DAL {
     password: 'u.password',
     createdAt: 'u.created_at',
     updatedAt: 'u.updated_at',
-    status: 'u.status'
+    status: 'u.status',
+    rights: this.db.raw('COALESCE(json_agg(DISTINCT r) FILTER (WHERE r.id IS NOT NULL), \'[]\')'),
+    accesses: this.db.raw('COALESCE(json_agg(DISTINCT a) FILTER (WHERE a.id IS NOT NULL), \'[]\')')
   };
 
   /**
@@ -100,21 +102,43 @@ class UsersDAL extends DAL {
    * @param {?string} sort
    * @param {int} limit
    * @param {int} offset
-   * @return {import('knex').Knex.QueryBuilder<*, *>}
+   * @return {Promise<object[]>}
    */
-  get = (fields, filters, sort= null, limit = 10, offset = 0) => {
+  get = async (fields, filters, sort= null, limit = 10, offset = 0) => {
+    const withRights = fields.includes('rights');
+    const withAccesses = fields.includes('accesses');
+    const extraFields = ['rights', 'accesses'];
     const query = this.db
       .select(
         Object.fromEntries(
           fields.map(
-            (field) => [field, this.mapField(field)]
+            (field) => [
+              field,
+              (withRights || withAccesses) && !extraFields.includes(field) ?
+                this.db.raw(`MAX(${this.mapField(field)})`) :
+                this.mapField(field)
+            ]
           )
         )
       )
-      .from({u: 'users'})
+      .from({u: 'users'});
 
     for (const {operator, left, right} of filters) {
       this.handleWhere(this.mapField(left), operator, right)(query);
+    }
+
+    if (withRights) {
+      query
+        .leftJoin({asr: 'assigned_roles'}, {'u.id': 'asr.user_id'})
+        .leftJoin({avr: 'available_rights'}, {'asr.role_id': 'avr.role_id'})
+        .leftJoin({r: 'rights'}, {'avr.right_id': 'r.id'})
+        .groupBy(['u.id']);
+    }
+
+    if (withRights) {
+      query
+        .leftJoin({a: 'accesses'}, {'u.id': 'a.user_id'})
+        .groupBy(['u.id']);
     }
 
     if (sort) {
@@ -129,19 +153,47 @@ class UsersDAL extends DAL {
       query.offset(offset);
     }
 
-    return query;
+    const result = await query;
+
+    if (result.accesses) {
+      result.accesses = result.accesses.map(({user_id, entity_id, ...rest}) => ({
+        ...rest,
+        userId: user_id,
+        entityId: entity_id
+      }));
+    }
+
+    return result;
   }
 
   /**
    * Находит пользователя.
    * @param {int} userId
-   * @return {import('knex').Knex.QueryBuilder<*, *>}
+   * @return {Promise<object>}
    */
-  find = (userId) => this.db
-    .first(this.fieldMap)
-    .from({u: 'users'})
-    .where({'u.id': userId})
-    .andWhere({'u.status': 'active'});
+  find = async(userId) => {
+    const [user] = await this.get(
+      [...Object.keys(this.fieldMap).filter((key) => key !== 'password')],
+      [
+        {
+          left: 'id',
+          operator: '=',
+          right: userId
+        },
+        {
+          left: 'status',
+          operator: '=',
+          right: 'active'
+        }
+      ]
+    );
+
+    if (!user) {
+      throw new NotFoundError('user', userId);
+    }
+
+    return user;
+  }
 }
 
 module.exports = UsersDAL;
