@@ -1,3 +1,0 @@
-[submodule "public"]
-	path = public
-	url = git@github.com:esoft-school-2022/tic-tac-toe-frontend.git
