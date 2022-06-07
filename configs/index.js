@@ -1,10 +1,15 @@
 module.exports = {
   development: {
+    env: 'development',
     auth: {
       secret: 'super-secret',
     },
     broker: {
-      url: 'redis://127.0.0.1:6379'
+      url: 'redis://localhost:6379'
+    },
+    logger: {
+      level: 'debug',
+      host: 'http://localhost:3100'
     },
     database: {
       client: 'pg',
@@ -23,11 +28,16 @@ module.exports = {
     }
   },
   production: {
+    env: 'production',
     auth: {
       secret: process.env.AUTH_SECRET,
     },
     pubSub: {
       url: process.env.REDIS_URL
+    },
+    logger: {
+      level: process.env.LOGGER_LEVEL,
+      host: process.env.LOKI_HOST
     },
     database: {
       client: 'pg',

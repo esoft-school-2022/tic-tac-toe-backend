@@ -1,11 +1,12 @@
 const express = require('express');
-const {catchErrors} = require('./middlewares');
+const {catchErrors, log} = require('./middlewares');
 const api = require('./routes');
 
-module.exports = ({config, db, auth}) => {
+module.exports = ({config, db, auth, logger}) => {
   const app = express();
 
   app.use(express.json());
+  app.use(log(logger));
   app.use(auth.initialize);
   app.use('/api', api({config, db, auth}));
   app.use(catchErrors);
