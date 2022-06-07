@@ -10,10 +10,5 @@ module.exports = ({config, db, auth}) => {
   app.use('/api', api({config, db, auth}));
   app.use(catchErrors);
 
-  if (config.serveStatic) {
-    app.use(express.static('public', {index: false}));
-    app.use('*', (_, res) => res.sendFile('index.html', {root: 'public'}));
-  }
-
   return app;
 };

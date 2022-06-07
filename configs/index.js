@@ -6,7 +6,6 @@ module.exports = {
     broker: {
       url: 'redis://127.0.0.1:6379'
     },
-    serveStatic: true,
     database: {
       client: 'pg',
       connection: 'postgresql://tic_tac_toe:Passw0rd@localhost:5432/tic_tac_toe',
@@ -30,7 +29,6 @@ module.exports = {
     pubSub: {
       url: process.env.REDIS_URL
     },
-    serveStatic: Boolean(process.env.SERVE_STATIC),
     database: {
       client: 'pg',
       connection: process.env.DB_URL,
