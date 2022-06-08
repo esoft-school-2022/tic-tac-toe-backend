@@ -3,7 +3,7 @@
  * @param {import('winston').Logger} logger
  * @returns {import('express').RequestHandler}
  */
-const logRequestResponse = (logger) =>
+const logRequests = (logger) =>
   (req, res, next) => {
     req.on('close', () => {
       let level = 'info';
@@ -20,4 +20,4 @@ const logRequestResponse = (logger) =>
     next();
   };
 
-module.exports = logRequestResponse;
+module.exports = logRequests;
