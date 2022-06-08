@@ -8,7 +8,7 @@ module.exports = ({config, db, auth, logger}) => {
   app.use(express.json());
   app.use(log(logger));
   app.use(auth.initialize);
-  app.use('/api', api({config, db, auth}));
+  app.use(api({config, db, auth}));
   app.use(catchErrors);
 
   return app;

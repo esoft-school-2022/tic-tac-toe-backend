@@ -32,7 +32,7 @@ module.exports = {
     auth: {
       secret: process.env.AUTH_SECRET,
     },
-    pubSub: {
+    broker: {
       url: process.env.REDIS_URL
     },
     logger: {
