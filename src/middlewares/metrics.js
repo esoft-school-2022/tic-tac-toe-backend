@@ -5,8 +5,17 @@
  * @returns {import('express').RequestHandler}
  */
 const collectMetrics = (metrics, prefix) =>
-  (req, res, next) => {
-    if (!req.path.match(/\/metrics/)) {
+  async (req, res, next) => {
+    if (req.path.match(/\/metrics/)) {
+      try {
+        res
+          .status(200)
+          .header('Content-Type', 'text/plain')
+          .end(await metrics.metrics());
+      } catch(err) {
+        next(err);
+      }
+    } else {
       const labels = {};
       const timer = metrics
         .getSingleMetric(`${prefix}http_request_duration`)
@@ -17,9 +26,9 @@ const collectMetrics = (metrics, prefix) =>
 
         timer();
       });
-    }
 
-    next();
+      next();
+    }
   };
 
 module.exports = collectMetrics;
