@@ -1,6 +1,5 @@
 module.exports = {
   development: {
-    env: 'development',
     auth: {
       secret: 'super-secret',
     },
@@ -9,7 +8,8 @@ module.exports = {
     },
     logger: {
       level: 'debug',
-      host: 'http://localhost:3100'
+      host: 'http://localhost:3100',
+      console: true
     },
     database: {
       client: 'pg',
@@ -28,7 +28,6 @@ module.exports = {
     }
   },
   production: {
-    env: 'production',
     auth: {
       secret: process.env.AUTH_SECRET,
     },
@@ -37,7 +36,8 @@ module.exports = {
     },
     logger: {
       level: process.env.LOGGER_LEVEL,
-      host: process.env.LOKI_HOST
+      host: process.env.LOKI_HOST,
+      console: process.env.ENABLE_CONSOLE
     },
     database: {
       client: 'pg',

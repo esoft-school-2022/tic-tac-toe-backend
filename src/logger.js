@@ -5,12 +5,13 @@ module.exports = ({config}) => {
   return winston.createLogger({
     transports: [
       new LokiTransport({
-        ...config.logger,
+        level: config.logger.level,
+        host: config.logger.host,
         labels: {
           app: 'tic-tac-toe'
         }
       }),
-      ...config.env === 'development' ? [
+      ...config.logger.console ? [
         new winston.transports.Console({
           level: config.logger.level
         })
