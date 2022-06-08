@@ -9,7 +9,7 @@ module.exports = {
     logger: {
       level: 'debug',
       host: 'http://localhost:3100',
-      console: true
+      console: 1
     },
     database: {
       client: 'pg',
@@ -37,7 +37,7 @@ module.exports = {
     logger: {
       level: process.env.LOGGER_LEVEL,
       host: process.env.LOKI_HOST,
-      console: process.env.ENABLE_CONSOLE
+      console: Number(process.env.ENABLE_CONSOLE)
     },
     database: {
       client: 'pg',
