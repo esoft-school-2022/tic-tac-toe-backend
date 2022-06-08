@@ -11,6 +11,9 @@ module.exports = {
       host: 'http://localhost:3100',
       console: 1
     },
+    metrics: {
+      prefix: 'tic_tac_toe_'
+    },
     database: {
       client: 'pg',
       connection: 'postgresql://tic_tac_toe:Passw0rd@localhost:5432/tic_tac_toe',
@@ -38,6 +41,9 @@ module.exports = {
       level: process.env.LOGGER_LEVEL,
       host: process.env.LOKI_HOST,
       console: Number(process.env.ENABLE_CONSOLE)
+    },
+    metrics: {
+      prefix: process.env.METRICS_PREFIX
     },
     database: {
       client: 'pg',
