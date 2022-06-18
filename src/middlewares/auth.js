@@ -2,8 +2,8 @@ const passport = require('passport');
 const {Strategy, ExtractJwt} = require('passport-jwt');
 const {AuthController} = require('../controllers');
 
-module.exports = ({db, config}) => {
-  const auth = new AuthController({db, config});
+module.exports = ({db, config, broker}) => {
+  const auth = new AuthController({db, config, broker});
 
   passport.use(
     'jwt',

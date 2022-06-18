@@ -2,9 +2,9 @@ const {Router} = require('express');
 const {AuthController} = require('../controllers');
 const {catchPromise} = require('../utils');
 
-module.exports = ({config, db, auth}) => {
+module.exports = ({config, db, broker}) => {
   const router = Router();
-  const authController = new AuthController({config, db});
+  const authController = new AuthController({config, db, broker});
 
   router.post(
     '/token',
@@ -12,7 +12,6 @@ module.exports = ({config, db, auth}) => {
   );
   router.get(
     '/resource',
-    auth.authenticate,
     authController.getResource
   );
 
